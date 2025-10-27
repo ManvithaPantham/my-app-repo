@@ -1,0 +1,7 @@
+name 'my_app_deploy'
+maintainer 'Your Name'
+maintainer_email 'youremail@example.com'
+license 'All Rights Reserved'
+description 'Deploys Node.js app using Chef'
+version '0.1.0'
+chef_version '>= 16.0'

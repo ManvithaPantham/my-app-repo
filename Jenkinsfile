@@ -2,37 +2,50 @@ pipeline {
     agent any
 
     environment {
-        CHEF_REPO = "C:/chef-cookbooks"
+        CHEF_REPO = "C:\\chef-cookbooks"
         RECIPE = "my_app_deploy"
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git credentialsId: 'my-git-cred', url: 'https://github.com/ManvithaPantham/my-app-repo.git'
+                echo "Checking out code from GitHub..."
+                git branch: 'main', credentialsId: 'my-git-cred', url: 'https://github.com/ManvithaPantham/my-app-repo.git'
             }
         }
 
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
-                echo "Installing dependencies..."
-                bat "cd %WORKSPACE% && npm install"
+                echo "Installing project dependencies..."
+                bat '''
+                cd %WORKSPACE%
+                if exist package.json (
+                    echo Installing NPM packages...
+                    call npm install
+                ) else (
+                    echo No package.json found, skipping npm install
+                )
+                '''
             }
         }
 
         stage('Deploy with Chef') {
             steps {
-                bat "chef-client --local-mode --runlist 'recipe[${RECIPE}]'"
+                echo "Running Chef deployment..."
+                bat """
+                cd /d %CHEF_REPO%
+                call chef-client --local-mode --runlist recipe[%RECIPE%]
+                """
             }
         }
     }
 
     post {
         success {
-            echo 'Deployment completed successfully!'
+            echo '✅ Deployment completed successfully!'
         }
         failure {
-            echo 'Deployment failed!'
+            echo '❌ Deployment failed. Check logs for details.'
         }
     }
 }

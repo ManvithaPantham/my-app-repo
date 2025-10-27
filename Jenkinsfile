@@ -10,7 +10,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 echo "Checking out code from GitHub..."
-                git branch: 'main', credentialsId: 'my-git-cred', url: 'https://github.com/ManvithaPantham/my-app-repo.git'
+                git branch: 'main', url: 'https://github.com/ManvithaPantham/my-app-repo.git'
             }
         }
 
@@ -49,3 +49,4 @@ pipeline {
         }
     }
 }
+
